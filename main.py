@@ -1,20 +1,20 @@
 from pathlib import Path
+
 from rssparser import rss_parser, save_feed_to_db
 from database import engine, Base, SessionLocal
 from models import Feed, Article
+from app import app
 
 Base.metadata.create_all(bind=engine)
 
-# TODO:
-# Provide path fetching from some other place,
-# not just direct inline string,
-# e.g. environment variable for path
-# path = Path("/home/user/test_file.xml")
-url = "https://habr.com/ru/rss/articles/"
-
 def main():
-    with SessionLocal() as session:
-        save_feed_to_db(rss_parser(url), session)
+    import uvicorn
+    uvicorn.run(
+        "app:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True
+    )
     return 0
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
 )
+from sqlalchemy.orm import relationship
+
 from database import Base
 
 max_url_length = 512
@@ -24,3 +26,5 @@ class Article(Base):
     link = Column(String(max_url_length), unique=True)
     title = Column(String)
     time_published = Column(DateTime)
+
+    feed = relationship("Feed")
