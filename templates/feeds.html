@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Feeds</h2>
+{% for feed in feeds %}
+    <p>{{ feed.title }}, url: {{ feed.url }}</p>
+{% else %}
+    <p>Feed list is empty.</p>
+{% endfor %}
+{% endblock %}

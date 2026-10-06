@@ -2,7 +2,7 @@ from sqlalchemy import select
 
 from database import Base, engine, SessionLocal
 from models import Feed
-from rssparser import rss_parser, save_feed_to_db
+from services.feed_resolver import rss_parser, save_feed_to_db
 
 default_feeds = [
     {
@@ -36,8 +36,7 @@ def seed_db():
             session.commit()
             session.refresh(new_feed)
             
-            parsed_feed = rss_parser(new_feed.url)
-            save_feed_to_db(parsed_feed, session)
+            save_feed_to_db(new_feed.url, session)
 
         print("Initialization complete.")
         return 

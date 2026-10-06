@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from rssparser import rss_parser, save_feed_to_db
 from database import engine, Base, SessionLocal
 from models import Feed, Article
 from app import app

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Articles</h2>
+    
+    {% if articles %}
+        <ul>
+        {% for article in articles %}
+            <li>
+                <strong><a href="{{ article.link }}">{{ article.title }}</a></strong><br>
+                <small>
+                    From: {{ article.feed.title }}
+                    Published: {{ article.time_published }}
+                </small>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No articles yet.</p>
+    {% endif %}
+{% endblock %}

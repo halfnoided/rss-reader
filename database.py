@@ -4,7 +4,7 @@ from sqlalchemy.orm import (
     declarative_base
 )
 
-DATABASE_URL = "postgresql://postgres@localhost:5432/rss_reader_db"
+DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5432/rss_reader_db"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(

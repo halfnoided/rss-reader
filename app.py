@@ -1,6 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
+from pathlib import Path
 
 from database import SessionLocal
 from models import Article, Feed
@@ -9,21 +11,28 @@ from schemas import (
     FeedOut,
     ArticleOut,
     )
-from rssparser import rss_parser, save_feed_to_db
+from services.feed_resolver import rss_parser, save_feed_to_db
 
 showed_articles_limit = 10
 
 app = FastAPI()
+templates = Jinja2Templates(
+    directory=Path(__file__).parent / "templates"
+    )
 
 @app.get("/")
-def read_root():
-    return {"message":"Hello"}
+def read_root(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "index.html",
+        context={"message": "Hello"}
+    )
 
 @app.get(
     "/articles",
     response_model=list[ArticleOut]
     )
-def read_articles():
+def read_articles(request: Request):
     with SessionLocal() as session:
         articles = session.execute(
             select(Article)
@@ -32,20 +41,25 @@ def read_articles():
             .limit(showed_articles_limit)
         ).scalars().all()
 
-        return articles
+        return templates.TemplateResponse(
+            request,
+            "articles.html",
+            context={"articles": articles}
+        )
 
-@app.get(
-    "/feeds",
-    response_model=list[FeedOut]
-    )
-def read_feeds():
+@app.get("/feeds")
+def read_feeds(request: Request):
     with SessionLocal() as session:
         feeds = session.execute(
             select(Feed)
             .order_by(Feed.id)
         ).scalars().all()
 
-        return feeds
+        return templates.TemplateResponse(
+            request,
+            "feeds.html",
+            context={"feeds": feeds}
+        )
 
 @app.get(
     "/feeds/{feed_id}/articles",
@@ -85,7 +99,7 @@ def create_feed(feed: FeedCreate):
         session.refresh(new_feed)
 
         save_feed_to_db(
-            rss_parser(new_feed.url),
+            new_feed.url,
             session
             )
         return new_feed
