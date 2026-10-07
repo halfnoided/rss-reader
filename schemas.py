@@ -17,4 +17,6 @@ class ArticleOut(BaseModel):
     link: str
     title: str
     time_published: datetime | None
+    content: str | None
+    is_favorite: bool = False
     model_config = ConfigDict(from_attributes=True)

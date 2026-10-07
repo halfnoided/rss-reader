@@ -1,7 +1,7 @@
 from sqlalchemy import select
 
 from database import Base, engine, SessionLocal
-from models import Feed
+from models import Feed, Article
 from services.feed_resolver import rss_parser, save_feed_to_db
 
 default_feeds = [

@@ -22,7 +22,7 @@ def rss_parser(url: str):
         html_source = httpx.get(url, headers=headers, follow_redirects=True)
         html_source.raise_for_status()
 
-        content_type = html_source.headers['content-type']
+        content_type = html_source.headers["content-type"]
         if "html" in content_type:
             soup = BeautifulSoup(html_source.text, "html.parser")
             for link in soup.find_all("link", rel="alternate"):
@@ -45,7 +45,7 @@ def rss_parser(url: str):
         print(f"Server responded with status code {html_source.status_code}.")
         return None
 
-# Parse given  more readable and more python-like time format
+# Parse given time into more readable and more python-like time format
 def parsed_time(entry) -> datetime | None:
     parsed = entry.get("published_parsed")
     
@@ -86,11 +86,18 @@ def save_feed_to_db(feed_url, session):
         session.commit()
     
     for entry in parsed_source.entries:
+        article_content = ""
+        if "content" in entry:
+            article_content = entry.content[0].value
+        if (article_content == "") and ("summary" in entry):
+            article_content = entry.summary
+
         article = Article(
             feed_id = feed.id,
             link = entry.get("link"),
             title = entry.get("title"),
-            time_published = parsed_time(entry) 
+            time_published = parsed_time(entry),
+            content = article_content
         )
         try:
             session.add(article)

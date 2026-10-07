@@ -1,18 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Articles{% endblock %}
+{% block title %}Favorites{% endblock %}
 
 {% block content %}
-    <h1 class="text-3xl font-bold text-gray-800 mb-8">
-        {% if feed_title %}Articles from {{ feed_title }}{% else %}All Articles{% endif %}
-        {% if feed_id %}
-            <form action="/feeds/{{ feed_id }}/refresh" method="post" class="inline ml-4">
-                <button type="submit" class="text-blue-500 hover:text-blue-600 font-mono text-sm transition">
-                    refresh
-                </button>
-            </form>
-        {% endif %}
-    </h1>
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">Favorite Articles</h1>
     
     {% if articles %}
         <div class="space-y-4">
@@ -29,29 +20,23 @@
                     </span>
                     <span>at {{ article.time_published }}</span>
                     <form action="/articles/{{ article.id }}/favorite" method="post">
-                        <button type="submit" class="transition
-                            {% if article.is_favorite %}
-                                text-green-600 hover:text-green-700
-                            {% else %}
-                                text-gray-500 hover:text-blue-600
-                            {% endif %}">
-                            {% if article.is_favorite %}
-                                in favorites
-                            {% else %}
-                                add to favorites
-                            {% endif %}
+                        <button type="submit" class="text-green-600 hover:text-green-700 transition">
+                            in favorites
                         </button>
                     </form>
                 </div>
                 <a href="/articles/{{ article.id }}" class="text-blue-500 hover:text-blue-600 font-mono text-sm transition">
-                    read more >
+                    read more >>
                 </a>
             </div>
         {% endfor %}
         </div>
     {% else %}
         <div class="bg-white rounded-lg shadow-sm p-8 text-center border border-gray-200">
-            <p class="text-gray-600">No articles yet.</p>
+            <p class="text-gray-600 mb-4">No favorite articles yet.</p>
+            <a href="/articles" class="text-blue-500 hover:text-blue-600 font-mono text-sm transition">
+                browse articles >>
+            </a>
         </div>
     {% endif %}
 {% endblock %}

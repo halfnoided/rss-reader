@@ -2,20 +2,134 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RSS Reader</title>
-</head>
-<body>
-    <header>
-        <h1>RSS Reader</h1>
-        <nav>
-            <a href="/feeds">feeds/</a>
-            <a href="/articles">articles/</a>
-        </nav>
-    </header>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RSS Reader{% endblock %}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
 
-    <main>
+        body {
+            font-family: 'Adwaita Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        .prose {
+            max-width: 65ch;
+            color: #374151;
+            line-height: 1.75;
+        }
+
+        .prose h1, .prose h2, .prose h3 {
+            margin-top: 2em;
+            margin-bottom: 0.5em;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .prose h1 { font-size: 2em; }
+        .prose h2 { font-size: 1.5em; }
+        .prose h3 { font-size: 1.25em; }
+
+        .prose p {
+            margin-bottom: 1.25em;
+        }
+
+        .prose a {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .prose a:hover {
+            color: #1d4ed8;
+        }
+
+        .prose img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin: 1.5em 0;
+        }
+
+        .prose ul, .prose ol {
+            margin-bottom: 1.25em;
+            padding-left: 1.5em;
+        }
+
+        .prose li {
+            margin-bottom: 0.5em;
+        }
+
+        .prose code {
+            background-color: #f3f4f6;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
+        }
+
+        .prose pre {
+            background-color: #1f2937;
+            color: #f9fafb;
+            padding: 1em;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1.5em 0;
+        }
+
+        .prose pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        .prose blockquote {
+            border-left: 4px solid #d1d5db;
+            padding-left: 1em;
+            margin: 1.5em 0;
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-4 py-4 max-w-4xl">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <a href="/" class="text-2xl font-bold text-gray-800 hover:text-blue-600 transition">
+                        RSS Reader
+                    </a>
+                    <div class="flex gap-6">
+                        <a href="/feeds" class="text-gray-600 hover:text-blue-600 font-mono text-sm transition">
+                            feeds/
+                        </a>
+                        <a href="/articles" class="text-gray-600 hover:text-blue-600 font-mono text-sm transition">
+                            articles/
+                        </a>
+                        <a href="/favorites" class="text-gray-600 hover:text-blue-600 font-mono text-sm transition">
+                            favorites/
+                        </a>
+                    </div>
+                </div>
+                <a href="https://github.com/halfnoided" target="_blank" class="text-gray-600 hover:text-blue-600 font-mono text-sm transition">
+                    github/
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 max-w-4xl flex-grow">
         {% block content %}
         {% endblock %}
     </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="container mx-auto px-4 py-6 max-w-4xl">
+            <p class="text-center text-gray-500 font-mono text-sm">
+                made with fastapi + tailwindcss
+            </p>
+        </div>
+    </footer>
+
 </body>
 </html>

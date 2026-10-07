@@ -2,6 +2,8 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
+    Text,
+    Boolean,
     DateTime,
     ForeignKey,
 )
@@ -18,6 +20,8 @@ class Feed(Base):
     url = Column(String(max_url_length), unique=True)
     title = Column(String)
 
+    articles = relationship("Article", back_populates="feed")
+
 class Article(Base):
     __tablename__ = "articles"
 
@@ -26,5 +30,7 @@ class Article(Base):
     link = Column(String(max_url_length), unique=True)
     title = Column(String)
     time_published = Column(DateTime)
+    content = Column(Text, nullable=True)
+    is_favorite = Column(Boolean, default=False)
 
-    feed = relationship("Feed")
+    feed = relationship("Feed", back_populates="articles")
