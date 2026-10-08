@@ -1,3 +1,17 @@
 __pycache__
+ENV
+env
+venv
+.env
 .venv
 *.pyc
+build
+develop-eggs
+downloads
+eggs
+.eggs
+*.egg-info
+.pytest_cache
+.coverage
+.mypy_cache
+.ruff_cache
