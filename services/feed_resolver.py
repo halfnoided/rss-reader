@@ -8,12 +8,18 @@ from bs4 import BeautifulSoup
 
 from models import Feed, Article
 
+# TODO: move to some config file, e.g. app_settings.py
 # Default timeout, if there's no response from source
 timeout_in_seconds = 10
+
 socket.setdefaulttimeout(timeout_in_seconds)
 
-#TODO: youtube channels, telegram channels as feeds
+
+# This function fetches rss+atom (.xml) from HTML if the wanted feed
+# can pass 
 def rss_parser(url: str):
+
+    # Current `headers` functionality include only user-agent override
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0"
     }
@@ -45,7 +51,8 @@ def rss_parser(url: str):
         print(f"Server responded with status code {html_source.status_code}.")
         return None
 
-# Parse given time into more readable and more python-like time format
+# Parse time given by feedparser into more readable
+# and more python-like time format
 def parsed_time(entry) -> datetime | None:
     parsed = entry.get("published_parsed")
     
@@ -64,6 +71,8 @@ def parsed_time(entry) -> datetime | None:
     except (ValueError, TypeError):
         return None
 
+# Save feed by given feed URL within current local session
+# into persistent database
 def save_feed_to_db(feed_url, session):
     parsed_source = rss_parser(feed_url)
     if parsed_source is None:
@@ -77,7 +86,7 @@ def save_feed_to_db(feed_url, session):
         .where(Feed.url == feed_url)
         ).scalars().one_or_none()
 
-    if not feed:
+    if feed is None:
         feed = Feed(
             url = feed_url,
             title = feed_title

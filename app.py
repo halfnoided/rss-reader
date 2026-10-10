@@ -14,7 +14,8 @@ from schemas import (
     )
 from services.feed_resolver import rss_parser, save_feed_to_db
 
-showed_articles_limit = 10
+# TODO: move to some config file, e.g. app_settings.py
+showed_articles_limit = 25
 
 app = FastAPI()
 templates = Jinja2Templates(

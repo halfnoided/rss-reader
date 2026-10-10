@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: .
+    container_name: fastapi-app
+    environment:
+      - POSTGRES_DATABASE_URL="postgresql+psycopg://postgres:postgres@db:5432/rss_reader_db"
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+  db:
+    image: postgres:18
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=rss_reader_db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
