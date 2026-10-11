@@ -1,11 +1,11 @@
 from sqlalchemy import (
+    Boolean,
     Column,
+    DateTime,
+    ForeignKey,
     Integer,
     String,
     Text,
-    Boolean,
-    DateTime,
-    ForeignKey,
 )
 from sqlalchemy.orm import relationship
 
