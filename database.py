@@ -8,7 +8,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 # By default, if no such variable provided, it launches
 # from localhost
 
-POSTGRES_DATABASE_URL = os.getenv("POSTGRES_DATABASE_URL"
+POSTGRES_DATABASE_URL = os.getenv("POSTGRES_DATABASE_URL",
     "postgresql+psycopg://postgres:postgres@localhost:5432/rss_reader_db"
     )
 
