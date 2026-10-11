@@ -1,18 +1,17 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
-from sqlalchemy.orm import Session, joinedload
-from pathlib import Path
+from sqlalchemy.orm import joinedload
 
 from database import SessionLocal
 from models import Article, Feed
 from schemas import (
     FeedCreate,
-    FeedOut,
-    ArticleOut,
-    )
-from services.feed_resolver import rss_parser, save_feed_to_db
+)
+from services.feed_resolver import save_feed_to_db
 
 # TODO: move to some config file, e.g. app_settings.py
 showed_articles_limit = 25
@@ -55,7 +54,7 @@ def read_article_content(id: int, request: Request):
             .where(Article.id == id)
         ).scalars().one_or_none()
         
-        if not article_content:
+        if article_content is None:
             raise HTTPException(
                 status_code=404, 
                 detail=f"Article with id {id} not found"
@@ -95,12 +94,7 @@ def read_feed_articles(feed_id: int, request: Request):
                 detail=f"Feed with id {feed_id} not found"
             )
 
-        # trying to auto-refresh current feed
-        # when getting the list of its articles
-        try:
-            save_feed_to_db(feed.url, session)
-        except Exception as exc:
-            print(f"Error occurred while refreshing feed {feed.title}: {exc}")
+        save_feed_to_db(feed.url, session)
 
         articles = session.execute(
             select(Article)
@@ -151,10 +145,7 @@ def refresh_feeds():
         feeds = session.execute(select(Feed)).scalars().all()
 
         for feed in feeds:
-            try:
-                save_feed_to_db(feed.url, session)
-            except Exception as exc:
-                print(f"Error occurred while refreshing {feed.url}: {exc}")
+            save_feed_to_db(feed.url, session)
 
         return RedirectResponse(url="/feeds", status_code=303)
 
@@ -168,11 +159,7 @@ def refresh_feed_articles(feed_id: int):
                 status_code=404,
                 detail=f"Feed with id {feed_id} not found"
             )
-
-        try:
-            save_feed_to_db(feed.url, session)
-        except Exception as exc:
-            print(f"Error occured while refreshing feed {feed.title}: {exc}")
+        save_feed_to_db(feed.url, session)
 
         return RedirectResponse(url=f"/feeds/{feed_id}/articles", status_code=303)
 
@@ -180,7 +167,7 @@ def refresh_feed_articles(feed_id: int):
 def toggle_favorite(id: int):
     with SessionLocal() as session:
         article = session.get(Article, id)
-        if not article:
+        if article is None:
             raise HTTPException(
                 status_code=404,
                 detail=f"Article with id {id} not found"

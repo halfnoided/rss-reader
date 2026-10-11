@@ -1,12 +1,13 @@
 import socket
+from datetime import datetime
+
 import httpx
+from bs4 import BeautifulSoup
+from feedparser import parse
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from feedparser import parse
-from datetime import datetime
-from bs4 import BeautifulSoup
 
-from models import Feed, Article
+from models import Article, Feed
 
 # TODO: move to some config file, e.g. app_settings.py
 # Default timeout, if there's no response from source
@@ -41,7 +42,7 @@ def rss_parser(url: str):
         elif "xml" in content_type:
             return parse(url, request_headers=headers)
         else:
-            print(f"Unknown content type. Skipping...")
+            print("Unknown content type. Skipping...")
             return None
   
     except httpx.RequestError:
@@ -75,41 +76,44 @@ def parsed_time(entry) -> datetime | None:
 # into persistent database
 def save_feed_to_db(feed_url, session):
     parsed_source = rss_parser(feed_url)
+
     if parsed_source is None:
         print(f"Failed to parse {feed_url}.")
         return
      
     feed_title = parsed_source.feed.get("title", "Empty title")
 
-    feed = session.execute(
-        select(Feed)
-        .where(Feed.url == feed_url)
-        ).scalars().one_or_none()
+    try:
+        feed = session.execute(
+            select(Feed)
+            .where(Feed.url == feed_url)
+            ).scalars().one_or_none()
 
-    if feed is None:
-        feed = Feed(
-            url = feed_url,
-            title = feed_title
-        )
-        session.add(feed)
-        session.commit()
-    
-    for entry in parsed_source.entries:
-        article_content = ""
-        if "content" in entry:
-            article_content = entry.content[0].value
-        if (article_content == "") and ("summary" in entry):
-            article_content = entry.summary
-
-        article = Article(
-            feed_id = feed.id,
-            link = entry.get("link"),
-            title = entry.get("title"),
-            time_published = parsed_time(entry),
-            content = article_content
-        )
-        try:
-            session.add(article)
+        if feed is None:
+            feed = Feed(url = feed_url, title = feed_title)
+            session.add(feed)
             session.commit()
-        except IntegrityError:
-            session.rollback()
+        
+        for entry in parsed_source.entries:
+            article_content = ""
+            if "content" in entry:
+                article_content = entry.content[0].value
+            if (article_content == "") and ("summary" in entry):
+                article_content = entry.summary
+
+            article = Article(
+                feed_id = feed.id,
+                link = entry.get("link"),
+                title = entry.get("title"),
+                time_published = parsed_time(entry),
+                content = article_content
+            )
+            try:
+                session.add(article)
+                session.commit()
+            except IntegrityError:
+                session.rollback()
+                
+    except SQLAlchemyError as exc:
+        print(f"Database error while saving feed {feed_url}: {exc}")
+        session.rollback()
