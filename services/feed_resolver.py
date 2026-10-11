@@ -1,12 +1,12 @@
 import socket
-from datetime import datetime
-
 import httpx
+
+from datetime import datetime
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from feedparser import parse
 from sqlalchemy import exc, select
 from sqlalchemy.exc import IntegrityError
-
 from models import Article, Feed
 
 # TODO: move to some config file, e.g. app_settings.py
@@ -17,7 +17,7 @@ socket.setdefaulttimeout(timeout_in_seconds)
 
 
 # This function fetches rss+atom (.xml) from HTML if the wanted feed
-# can pass 
+# can pass it.
 def rss_parser(url: str):
 
     # Current `headers` functionality include only user-agent override
