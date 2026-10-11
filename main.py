@@ -1,8 +1,5 @@
-from pathlib import Path
 
-from database import engine, Base, SessionLocal
-from models import Feed, Article
-from app import app
+from database import Base, engine
 
 Base.metadata.create_all(bind=engine)
 

@@ -4,7 +4,7 @@ from datetime import datetime
 import httpx
 from bs4 import BeautifulSoup
 from feedparser import parse
-from sqlalchemy import select, exc
+from sqlalchemy import exc, select
 from sqlalchemy.exc import IntegrityError
 
 from models import Article, Feed
