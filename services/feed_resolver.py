@@ -16,8 +16,7 @@ timeout_in_seconds = 10
 socket.setdefaulttimeout(timeout_in_seconds)
 
 
-# This function fetches rss+atom (.xml) from HTML if the wanted feed
-# can pass it.
+# This function fetches rss+atom (.xml) from HTML
 def rss_parser(url: str):
 
     # Current `headers` functionality include only user-agent override
@@ -35,7 +34,7 @@ def rss_parser(url: str):
             for link in soup.find_all("link", rel="alternate"):
                 link_type = link.get("type", "")
                 if "rss" in link_type or "atom" in link_type:
-                    rss_url = link.get("href")
+                    rss_url = urljoin(url, link.get("href"))
                     return parse(rss_url, request_headers=headers)
             return None
     
