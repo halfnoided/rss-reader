@@ -4,7 +4,7 @@ from datetime import datetime
 import httpx
 from bs4 import BeautifulSoup
 from feedparser import parse
-from sqlalchemy import select
+from sqlalchemy import select, exc
 from sqlalchemy.exc import IntegrityError
 
 from models import Article, Feed
@@ -113,7 +113,7 @@ def save_feed_to_db(feed_url, session):
                 session.commit()
             except IntegrityError:
                 session.rollback()
-                
-    except SQLAlchemyError as exc:
-        print(f"Database error while saving feed {feed_url}: {exc}")
+
+    except exc.SQLAlchemyError as exception:
+        print(f"Database error while saving feed {feed_url}: {exception}")
         session.rollback()
