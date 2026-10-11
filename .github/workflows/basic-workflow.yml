@@ -17,11 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout 
-      uses: actions/checkout@v4
+    - name: repo checkout 
+      uses: actions/checkout@v7
 
     - name: set python 3.14
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: "3.14"
 
@@ -33,3 +33,10 @@ jobs:
     
     - name: lint using ruff
       run: ruff check . --output-format=github
+      
+      # In some frameworks, ruff cannot detect imports properly,
+      # therefore it forces to remove some that are actually in use
+      continue-on-error: true
+    
+    - name: type checking using mypy
+      run: mypy .
