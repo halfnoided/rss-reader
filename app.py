@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
@@ -128,16 +128,12 @@ def read_favorites(request: Request):
         )
 
 @app.post("/feeds")
-def create_feed(feed: FeedCreate):
-    new_feed = Feed(**feed.model_dump())
+def create_feed(feed_url: str = Form(...)):
+    new_feed = Feed(url=feed_url)
     with SessionLocal() as session:
-        session.add(new_feed)
-        session.commit()
-        session.refresh(new_feed)
-
         save_feed_to_db(new_feed.url, session)
 
-        return new_feed
+        return RedirectResponse(url="/feeds", status_code=303)
 
 @app.post("/feeds/refresh")
 def refresh_feeds():
