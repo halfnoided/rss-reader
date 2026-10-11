@@ -7,8 +7,9 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from datetime import datetime
 from database import Base
 
 # TODO: move to some config file, e.g. app_settings.py
@@ -18,11 +19,11 @@ max_url_length = 512
 class Feed(Base):
     __tablename__ = "feeds"
 
-    id = Column(Integer, primary_key=True, index=True)
-    url = Column(String(max_url_length), unique=True)
-    title = Column(String)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    url: Mapped[str] = mapped_column(String(max_url_length), unique=True)
+    title: Mapped[str | None] = mapped_column(String, nullable=True)
 
-    articles = relationship(
+    articles: Mapped[list[Article]] = relationship(
         "Article",
         back_populates="feed",
         cascade="all, delete-orphan"
@@ -31,12 +32,12 @@ class Feed(Base):
 class Article(Base):
     __tablename__ = "articles"
 
-    id = Column(Integer, primary_key=True, index=True)
-    feed_id = Column(Integer, ForeignKey("feeds.id"))
-    link = Column(String(max_url_length), unique=True)
-    title = Column(String)
-    time_published = Column(DateTime)
-    content = Column(Text, nullable=True)
-    is_favorite = Column(Boolean, default=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    feed_id: Mapped[int] = mapped_column(Integer, ForeignKey("feeds.id"))
+    link: Mapped[str] = mapped_column(String(max_url_length), unique=True)
+    title: Mapped[str | None] = mapped_column(String, nullable=True)
+    time_published: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    content: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_favorite: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    feed = relationship("Feed", back_populates="articles")
+    feed: Mapped[Feed] = relationship("Feed", back_populates="articles")

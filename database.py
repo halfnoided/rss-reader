@@ -1,7 +1,7 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 # Gets database URL from Docker compose file (compose.yaml)
 # as environment variable POSTGRES_DATABASE_URL.
@@ -18,4 +18,6 @@ SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False
     )
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
