@@ -1,7 +1,5 @@
-from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict
-
+from datetime import datetime
 
 class FeedCreate(BaseModel):
     url: str

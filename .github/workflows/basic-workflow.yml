@@ -32,4 +32,6 @@ jobs:
         pip install -r requirements-dev.txt
     
     - name: lint using ruff
-      run: ruff check . --output-format=github
+      run: |
+        pip install ruff
+        ruff check . --output-format=github
